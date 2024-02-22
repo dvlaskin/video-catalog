@@ -1,0 +1,11 @@
+// run docker imgs
+docker-compose up -d
+
+// turn off docker imgs
+docker-compose down
+
+// turn off docker imgs and delete volume with data
+docker-compose down -v
+
+// turn off docker imgs and delete these imgs with data
+docker-compose down --rmi local

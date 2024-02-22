@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="main-page">
+
+    <!-- Masthead-->
+    <header class="masthead">
+        <div class="container">
+
+            <div class="brand-font brand-color-yellow" style="font-size: 5rem; line-height: 2rem;">main page title</div>
+            <div class="brand-font" style="font-size: 2.7rem; ">main page subtitle</div>
+
+            <div id="ehm-services" class="brand-font" style="white-space: normal;">
+                <span style="display: inline-block; white-space: nowrap;">Feature</span>
+                <span id="ehm-services-ampersand" style="white-space: nowrap;"> & </span>
+                <span style="display: inline-block; white-space: nowrap;">Service</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contact-->
+    <section class="page-section" id="contact" style="height: 50vh;">
+        <div class="container">
+            <div class="text-center">
+                <h2 class="section-heading text-uppercase">Contact Us</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 brand-font brand-color-yellow" style="padding: .5rem;">
+                    <div class="icon d-flex align-items-start justify-content-start">
+                        <span class="fa fa-map-marker"></span>
+                        <span style="margin-left: 1rem;">Address:</span>
+                    </div>
+                    <div>
+                        Fake Street 123, City, Country
+                    </div>
+                </div>
+                <div class="col-lg-4 brand-font brand-color-yellow" style="padding: .5rem;">
+                    <div class="icon d-flex align-items-start justify-content-start">
+                        <span class="fa fa-phone"></span>
+                        <span style="margin-left: 1rem;">Phone:</span>
+                    </div>
+                    <div>
+                        (000) 123 456 789
+                    </div>
+                </div>
+                <div class="col-lg-4 brand-font brand-color-yellow" style="padding: .5rem;">
+                    <div class="icon d-flex align-items-start justify-content-start">
+                        <span class="fa fa-envelope"></span>
+                        <span style="margin-left: 1rem;">Email:</span>
+                    </div>
+                    <div>
+                        fake.email@mail.com
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

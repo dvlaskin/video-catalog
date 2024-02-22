@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+My Django Site - Catalog
+{% endblock %}
+
+{% block content %}
+<div id="mainNavMargin"></div>
+<div class="d-flex justify-content-center align-items-center">
+    <div class="alert alert-success alert-copy-link" role="alert" id="copyAlert" style="display: none;">
+        Link copied to clipboard!
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="navbar navbar-expand-md navbar-dark" style="padding: 0px;">
+            <div class="container-fluid">
+                <button class="mobile-sidebar-toggle btn btn-primary d-md-none" id="sidebar-toggle">
+                    Categories
+                </button>
+            </div>
+        </nav>
+        <nav class="col-md-3 col-lg-2 d-none d-md-block sidebar">
+            <h2>Categories</h2>
+            <ul class="nav flex-column">
+                <!-- Add more sidebar items as needed -->
+                {% for category in category_list %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/catalog/{{ category.id }}">
+                        {{ category.Name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        <div class="mobile-sidebar-dropdown">
+            <h2>Categories</h2>
+            <ul class="nav flex-column">
+                <!-- Add more sidebar items as needed -->
+                {% for category in category_list %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/catalog/{{ category.id }}">
+                        {{ category.Name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
+            <!-- List of items -->
+            <div class="row">
+                <h1>{{ video_header_title }}</h1>
+                <!-- Add more item cards as needed -->
+
+                {% for item in video_list %}
+                <div class="col-md-4">
+                    <div class="card mb-4 video-card">
+                        <!-- Video Preview -->
+                        <div class="video-preview"
+                            source="media/{{item.VideoFile}}"
+                            title="{{ item.Title }}"
+                            description="{{ item.Description }}">
+
+                                <img 
+                                    id="my-video" 
+                                    class="video-js" 
+                                    src="../{{ item.Thumbnail }}" 
+                                    alt="{{ item.Title }}" 
+                                    width="640">
+
+                            <div class="play-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="40" fill="rgba(0, 0, 0, 0.7)"/>
+                                    <polygon points="35,20 35,80 70,50" fill="#fff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Item {{ item.Title }}</h5>
+                            <p>{{ item.Description }}</p>
+                        </div>
+                        <button class="btn btn-primary" 
+                            title="Link Copied"
+                            video-link="{{ share_video_link }}/{{ item.id }}" 
+                            data-content="Link copied to clipboard!"
+                            onclick="copyVideoLink(this)">Copy Link to Video</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="centered-div">
+                <nav aria-label="Page navigation example"></nav>
+                    {% if video_list.has_other_pages %}
+                    <ul class="pagination">
+                        {% if video_list.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ video_list.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><a class="page-link">&laquo;</a></li>
+                        {% endif %}
+                        {% for i in video_list.paginator.page_range %}
+                            {% if video_list.number == i %}
+                                <li class="page-item active"><a class="page-link">{{ i }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if video_list.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ video_list.next_page_number }}">&raquo;</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><a class="page-link">&raquo;</a></li>
+                        {% endif %}
+                    </ul>
+                    {% endif %}
+                </nav>
+            </div>
+
+        </main>
+    </div>
+
+    <div class="row">
+        <!-- Modal -->
+        <div class="modal fade" id="videoPlayerModal" tabindex="-1" role="dialog" aria-labelledby="videoPlayerModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoPlayerModalLabel">Video title</h5>
+                    <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close" onclick="closeModalWindow()">
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="video-preview">
+                            <!-- The content will be dynamically updated here -->
+                        </div>
+                        <div id="modal-description" class="card-body">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeModalWindow()">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+{% block script %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const videoCards = document.querySelectorAll('.video-preview');
+        const modalTitle = document.querySelector('.modal-title');
+        const modalDescription = document.querySelector('#modal-description');
+
+        videoCards.forEach(videoCard => {
+            videoCard.addEventListener('click', function() {
+
+                // get video data info from catalog item
+                const title = this.getAttribute('title');
+                const source = this.getAttribute('source');
+                const description = this.getAttribute('description');
+
+                // set video data info to player
+                modalTitle.textContent = title;
+                modalDescription.textContent = description;
+
+                let modalBody = '';
+                let autoPlay = false;
+                // insert video or iframe into modal body
+                modalBody = `
+                    <video
+                        id="videoPlayer"
+                        class="video-js vjs-default-skin"
+                        controls
+                        preload="auto"
+                        style="width: 100%; height: 100%;">
+                        <source src="${source}" type="video/mp4">
+                    </video>
+                `   
+
+                // insert into video-preview html player for video link
+                $('#videoPlayerModal .video-preview').html(modalBody);
+                           
+                // if can be used autoplay for player, run it
+                if (autoPlay) {
+                    // load new source for player
+                    const videoPlayer = document.getElementById('videoPlayer');
+                    videoPlayer.load();
+                    videoPlayer.play();
+                }
+
+                // Open the Bootstrap modal
+                $('#videoPlayerModal').modal('show');
+            });
+        });
+    });
+
+    // Function calls when Modal window close
+    function closeModalWindow() {
+        $('#videoPlayerModal .video-preview').html('');
+    }
+
+    // Function to copy the video link to the clipboard
+    function copyVideoLink(button) {
+        const sourceLink = button.getAttribute('video-link');
+
+        // Now, you can use the sourceLink value in your function
+        console.log('Source Link:', sourceLink);
+
+        navigator.clipboard.writeText(sourceLink);
+
+        const copyAlert = document.getElementById('copyAlert');
+        copyAlert.style.display = 'block';
+        setTimeout(function() {
+            copyAlert.style.display = 'none';
+        }, 2000); // Hide the message after 3 seconds
+    }
+</script>
+
+<script>
+    // JavaScript to toggle the mobile sidebar dropdown
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const mobileSidebarDropdown = document.querySelector('.mobile-sidebar-dropdown');
+
+    sidebarToggle.addEventListener('click', function () {
+        mobileSidebarDropdown.classList.toggle('show');
+    });
+</script>
+
+{% endblock %}
