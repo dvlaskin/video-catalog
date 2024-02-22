@@ -29,7 +29,7 @@ python -m venv .venv
 
 4. Activate virtual environment
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
 5. Install requirements
